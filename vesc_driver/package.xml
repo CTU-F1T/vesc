@@ -4,6 +4,9 @@
   <version>0.0.1</version>
   <description>
     ROS device driver for the Vedder VESC open source motor driver.
+
+    Note: Slightly edited version with removed nodelet.
+    Source: rtime:f1tenth/vesc
   </description>
 
   <maintainer email="boulet@ll.mit.edu">Michael T. Boulet</maintainer>
@@ -16,22 +19,14 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>nodelet</build_depend>
-  <build_depend>pluginlib</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>vesc_msgs</build_depend>
   <build_depend>serial</build_depend>
 
-  <run_depend>nodelet</run_depend>
-  <run_depend>pluginlib</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>vesc_msgs</run_depend>
   <run_depend>serial</run_depend>
-
-  <export>
-    <nodelet plugin="${prefix}/vesc_driver_nodelet.xml"/>
-  </export>
 
 </package>
