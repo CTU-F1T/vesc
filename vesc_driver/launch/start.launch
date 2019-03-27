@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!--
+  Author: Jaroslav Klapálek <klapajar@fel.cvut.cz>
+  Description: Launch a node to communicate with VESC.
+-->
+<launch>
+  <arg name="port" doc="Location of a port which the Teensy board is attached to." />
+
+  <node pkg="vesc_driver" type="vesc_driver_node" name="vesc" output="screen">
+    <param name="port" value="$(arg port)" />
+  </node>
+</launch>
