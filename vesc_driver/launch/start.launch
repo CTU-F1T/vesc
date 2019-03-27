@@ -5,8 +5,10 @@
 -->
 <launch>
   <arg name="port" doc="Location of a port which the Teensy board is attached to." />
+  <arg name="commands" default="false" doc="When true, callbacks for controlling VESC are created." />
 
   <node pkg="vesc_driver" type="vesc_driver_node" name="vesc" output="screen">
     <param name="port" value="$(arg port)" />
+    <param name="commands" value="$(arg commands)" />
   </node>
 </launch>
