@@ -10,6 +10,14 @@
   <arg if="$(arg debug)" name="launch_prefix" value="xterm -e gdb --args" />
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
 
+
+  <!-- VESC driver parameters -->
+  <arg name="port" default="/dev/ttyACM0" />
+  <node pkg="vesc_driver" type="vesc_driver_node" name="vesc_driver_node" 
+  output="screen" >
+  <param name="port" value="$(arg port)" />
+  </node> 
+
   <!-- VESC to Odom node -->
   <node pkg="vesc_ackermann" type="vesc_to_odom_node" name="vesc_to_odom_node"
         output="screen" launch-prefix="$(arg launch_prefix)" >
