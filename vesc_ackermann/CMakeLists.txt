@@ -11,7 +11,6 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   ackermann_msgs
   vesc_msgs
-  teensy
 )
 
 catkin_package(

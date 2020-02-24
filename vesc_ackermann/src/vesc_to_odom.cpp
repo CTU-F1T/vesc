@@ -15,7 +15,7 @@ inline bool getRequiredParam(const ros::NodeHandle& nh, std::string name, T& val
 
 VescToOdom::VescToOdom(ros::NodeHandle nh, ros::NodeHandle private_nh) :
   odom_frame_("odom"), base_frame_("base_link"),
-  use_servo_cmd_(true), publish_tf_(false), x_(0.0), y_(0.0), yaw_(0.0), has_steering_cmd_(false)
+  use_servo_cmd_(true), publish_tf_(false), x_(0.0), y_(0.0), yaw_(0.0)
 {
   // get ROS parameters
   private_nh.param("odom_frame", odom_frame_, odom_frame_);
@@ -34,6 +34,7 @@ VescToOdom::VescToOdom(ros::NodeHandle nh, ros::NodeHandle private_nh) :
       return;
   }
   private_nh.param("publish_tf", publish_tf_, publish_tf_);
+
   // create odom publisher
   odom_pub_ = nh.advertise<nav_msgs::Odometry>("odom", 10);
 
@@ -42,47 +43,27 @@ VescToOdom::VescToOdom(ros::NodeHandle nh, ros::NodeHandle private_nh) :
     tf_pub_.reset(new tf::TransformBroadcaster);
   }
 
-
   // subscribe to vesc state and. optionally, servo command
   vesc_state_sub_ = nh.subscribe("sensors/core", 10, &VescToOdom::vescStateCallback, this);
-
-
   if (use_servo_cmd_) {
-    estop_sub_ = nh.subscribe("eStop", 10, &VescToOdom::eStopCallback,this);
-    servo_sub_ = nh.subscribe("drive_pwm", 10,
+    servo_sub_ = nh.subscribe("sensors/servo_position_command", 10,
                               &VescToOdom::servoCmdCallback, this);
-    pwm_high_sub = nh.subscribe("pwm_high",10,&VescToOdom::pwmHighCallback,this);
   }
 }
 
 void VescToOdom::vescStateCallback(const vesc_msgs::VescStateStamped::ConstPtr& state)
 {
-
   // check that we have a last servo command if we are depending on it for angular velocity
-  if (use_servo_cmd_ && !has_steering_cmd_)
+  if (use_servo_cmd_ && !last_servo_cmd_)
     return;
 
   // convert to engineering units
   double current_speed = ( state->state.speed - speed_to_erpm_offset_ ) / speed_to_erpm_gain_;
   double current_steering_angle(0.0), current_angular_velocity(0.0);
   if (use_servo_cmd_) {
-
-   //current_steering_angle = (steering_to_servo_gain_*steering_angle_) +
-   //steering_to_servo_offset_;
-
-   current_steering_angle = (steering_angle_ - steering_to_servo_offset_) / (steering_to_servo_gain_);
-
-   // Steering deadzone
-   if( current_steering_angle < 0.01 && current_steering_angle > -0.01){
-      current_steering_angle = 0;
-   }
-
-   //std::cout << "steernig angle: " << current_steering_angle << std::endl;
-
-   //current_steering_angle = ( last_servo_cmd_->pwm_angle - steering_to_servo_offset_ ) /
-   //steering_to_servo_gain_;
-   current_angular_velocity = current_speed * tan(current_steering_angle) / wheelbase_;
-
+    current_steering_angle =
+      ( last_servo_cmd_->data - steering_to_servo_offset_ ) / steering_to_servo_gain_;
+    current_angular_velocity = current_speed * tan(current_steering_angle) / wheelbase_;
   }
 
   // use current state as last state if this is our first time here
@@ -111,8 +92,6 @@ void VescToOdom::vescStateCallback(const vesc_msgs::VescStateStamped::ConstPtr& 
   odom->header.stamp = state->header.stamp;
   odom->child_frame_id = base_frame_;
 
-  //std::cout << "yaw: " << yaw_ << std::endl;
-
   // Position
   odom->pose.pose.position.x = x_;
   odom->pose.pose.position.y = y_;
@@ -125,22 +104,12 @@ void VescToOdom::vescStateCallback(const vesc_msgs::VescStateStamped::ConstPtr& 
   /** @todo Think about position uncertainty, perhaps get from parameters? */
   odom->pose.covariance[0]  = 0.2; ///< x
   odom->pose.covariance[7]  = 0.2; ///< y
-  odom->pose.covariance[14] = 0.01; ///
-  odom->pose.covariance[21] = 0.01; ///
-  odom->pose.covariance[28] = 0.01; ///
   odom->pose.covariance[35] = 0.4; ///< yaw
 
   // Velocity ("in the coordinate frame given by the child_frame_id")
   odom->twist.twist.linear.x = current_speed;
   odom->twist.twist.linear.y = 0.0;
   odom->twist.twist.angular.z = current_angular_velocity;
-
-  odom->twist.covariance[0] = 0.2;
-  odom->twist.covariance[7] = 0.2;
-  odom->twist.covariance[14] = 0.01;
-  odom->twist.covariance[21] = 0.01;
-  odom->twist.covariance[28] = 0.01;
-  odom->twist.covariance[35] = 0.4;
 
   // Velocity uncertainty
   /** @todo Think about velocity uncertainty */
@@ -164,28 +133,9 @@ void VescToOdom::vescStateCallback(const vesc_msgs::VescStateStamped::ConstPtr& 
   }
 }
 
-void VescToOdom::servoCmdCallback(const teensy::drive_values::ConstPtr& servo)
+void VescToOdom::servoCmdCallback(const std_msgs::Float64::ConstPtr& servo)
 {
-  if(!estop_state_){
-     has_steering_cmd_ = true;
-     steering_angle_ = servo->pwm_angle;
-  }
-}
-
-void VescToOdom::eStopCallback(const std_msgs::Bool::ConstPtr& estop)
-{
-  // @Todo take data from drive_pwm or pwm_high based on the estop data
-  estop_state_ = estop->data;
-  //std::cout << "Vesc state changed to : " << estop_state_ << std::endl;
-}
-
-void VescToOdom::pwmHighCallback(const teensy::pwm_high::ConstPtr& pwm_high)
-{
-
-   if(estop_state_){
-      has_steering_cmd_ = true;
-      steering_angle_ = pwm_high->period_str;
-   }
+  last_servo_cmd_ = servo;
 }
 
 template <typename T>
