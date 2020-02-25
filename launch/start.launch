@@ -13,8 +13,8 @@
   <arg name="steering_angle_to_servo_offset" default="" doc="(Required if Servo) Offset for servo value." />
   <arg name="wheelbase" default="" doc="(Required if Servo) Distance between the wheels on the 'x' axis." />
 
-  <arg name="speed_to_erpm_gain" default="" doc="Gain, to convert VESC speed to metric values." />
-  <arg name="speed_to_erpm_offset" default="" doc="Offset for VESC speed." />
+  <arg name="speed_to_erpm_gain" default="" doc="(Required if car parameters are missing) Gain, to convert VESC speed to metric values." />
+  <arg name="speed_to_erpm_offset" default="0" doc="Offset for VESC speed." />
 
   <arg name="publish_tf" default="false" doc="When true, transformation between the frames is published." />
 
