@@ -21,7 +21,7 @@ VescToOdom::VescToOdom(ros::NodeHandle nh, ros::NodeHandle private_nh) :
   private_nh.param("odom_frame", odom_frame_, odom_frame_);
   private_nh.param("base_frame", base_frame_, base_frame_);
   private_nh.param("use_servo_cmd_to_calc_angular_velocity", use_servo_cmd_, use_servo_cmd_);
-  if (!nh.getParam("speed_to_erpm_gain", speed_to_erpm_gain_)) {
+  if (!private_nh.getParam("speed_to_erpm_gain", speed_to_erpm_gain_)) {
     double m_poles, d_spur, m_pinion, d_ring, d_pinion, w_radius;
     if (!getRequiredParam(nh, "/parameters/motor/poles", m_poles)
         || !getRequiredParam(nh, "/parameters/motor/pinion", m_pinion)
@@ -39,14 +39,14 @@ VescToOdom::VescToOdom(ros::NodeHandle nh, ros::NodeHandle private_nh) :
   } else {
     ROS_INFO("Using passed 'speed_to_erpm_gain' value.");
   }
-  if (!getRequiredParam(nh, "speed_to_erpm_offset", speed_to_erpm_offset_))
+  if (!getRequiredParam(private_nh, "speed_to_erpm_offset", speed_to_erpm_offset_))
     return;
   if (use_servo_cmd_) {
-    if (!getRequiredParam(nh, "steering_angle_to_servo_gain", steering_to_servo_gain_))
+    if (!getRequiredParam(private_nh, "steering_angle_to_servo_gain", steering_to_servo_gain_))
       return;
-    if (!getRequiredParam(nh, "steering_angle_to_servo_offset", steering_to_servo_offset_))
+    if (!getRequiredParam(private_nh, "steering_angle_to_servo_offset", steering_to_servo_offset_))
       return;
-    if (!getRequiredParam(nh, "wheelbase", wheelbase_))
+    if (!getRequiredParam(private_nh, "wheelbase", wheelbase_))
       return;
   }
   private_nh.param("publish_tf", publish_tf_, publish_tf_);
