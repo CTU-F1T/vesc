@@ -21,7 +21,7 @@ VescToOdom::VescToOdom(ros::NodeHandle nh, ros::NodeHandle private_nh) :
   private_nh.param("odom_frame", odom_frame_, odom_frame_);
   private_nh.param("base_frame", base_frame_, base_frame_);
   private_nh.param("use_servo_cmd_to_calc_angular_velocity", use_servo_cmd_, use_servo_cmd_);
-  if (!getRequiredParam(nh, "speed_to_erpm_gain", speed_to_erpm_gain_)) {
+  if (!nh.getParam("speed_to_erpm_gain", speed_to_erpm_gain_)) {
     double m_poles, d_spur, m_pinion, d_ring, d_pinion, w_radius;
     if (!getRequiredParam(nh, "/parameters/motor/poles", m_poles)
         || !getRequiredParam(nh, "/parameters/motor/pinion", m_pinion)
@@ -36,6 +36,8 @@ VescToOdom::VescToOdom(ros::NodeHandle nh, ros::NodeHandle private_nh) :
                          * (1.0 * d_ring / d_pinion)
                          / (2.0 * M_PI * w_radius)
                          * 60;
+  } else {
+    ROS_INFO("Using passed 'speed_to_erpm_gain' value.");
   }
   if (!getRequiredParam(nh, "speed_to_erpm_offset", speed_to_erpm_offset_))
     return;
