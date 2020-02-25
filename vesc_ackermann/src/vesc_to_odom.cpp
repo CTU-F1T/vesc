@@ -41,6 +41,7 @@ VescToOdom::VescToOdom(ros::NodeHandle nh, ros::NodeHandle private_nh) :
   }
   if (!getRequiredParam(private_nh, "speed_to_erpm_offset", speed_to_erpm_offset_))
     return;
+  // TODO: Resolve servo for F1/10 car.
   if (use_servo_cmd_) {
     if (!getRequiredParam(private_nh, "steering_angle_to_servo_gain", steering_to_servo_gain_))
       return;
