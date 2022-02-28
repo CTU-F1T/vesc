@@ -1,0 +1,8 @@
+[<vehicleplatform>vesc|
+Connect to VESC, receive
+its telemetry and send
+commands.
+]
+[<state> /commands/motor/speed|std_msgs/Float64]-->[vesc]
+[<state> /commands/*|various]-->[vesc]
+[vesc]->[<state> /sensors/core|vesc_msgs/VescStateStamped]

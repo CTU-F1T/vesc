@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+  Author: Jaroslav Klapálek <klapajar@fel.cvut.cz>
+  Description: Launch a node to communicate with VESC.
+-->
+<launch>
+  <arg name="port" default="-" doc="Location of a port which the VESC is attached to." />
+  <arg name="commands" default="false" doc="When true, callbacks for controlling VESC are created." />
+
+  <node pkg="vesc_driver" type="vesc_driver_node" name="vesc" output="screen">
+    <param name="port" value="$(arg port)" if="$(eval arg('port') != '-')" />
+    <param name="port" command="$(find roslaunch_udev)/src/get_port.py vesc" unless="$(eval arg('port') != '-')" />
+    <param name="commands" value="$(arg commands)" />
+  </node>
+</launch>
