@@ -1,13 +1,20 @@
 <?xml version="1.0"?>
-<package>
+<?xml-model
+  href="http://download.ros.org/schema/package_format3.xsd"
+  schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>vesc</name>
   <version>0.0.1</version>
   <description>
     Metapackage for ROS interface to the Vedder VESC open source motor controller.
   </description>
 
-  <maintainer email="boulet@ll.mit.edu">Michael T. Boulet</maintainer>
+  <maintainer email="f1tenth@rtime.felk.cvut.cz">F1tenth CTU Community</maintainer>
+
   <author email="boulet@ll.mit.edu">Michael T. Boulet</author>
+  <author email="vajnamar@fel.cvut.cz">Martin Vajnar</author>
+  <author email="klapajar@fel.cvut.cz">Jaroslav Klapálek</author>
+
   <license>BSD</license>
 
   <url type="website">http://www.ros.org/wiki/vesc</url>
@@ -16,12 +23,12 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <run_depend>vesc_driver</run_depend>
-  <run_depend>vesc_msgs</run_depend>
-  <run_depend>vesc_ackermann</run_depend>
+  <exec_depend>vesc_driver</exec_depend>
+  <exec_depend>vesc_msgs</exec_depend>
+  <exec_depend>vesc_ackermann</exec_depend>
 
   <export>
     <metapackage/>
+    <index url="git@github.com:CTU-F1T/vesc.git" />
   </export>
-
 </package>

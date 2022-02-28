@@ -1,15 +1,19 @@
 <?xml version="1.0"?>
-<package>
+<?xml-model
+  href="http://download.ros.org/schema/package_format3.xsd"
+  schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>vesc_ackermann</name>
   <version>0.1.0</version>
   <description>
     Translate between VESC messages and ROS ackermann and odometry messages.
   </description>
 
-  <maintainer email="klapajar@fel.cvut.cz">Jaroslav Klapálek</maintainer>
-  <maintainer email="boulet@ll.mit.edu">Michael T. Boulet</maintainer>
+  <maintainer email="f1tenth@rtime.felk.cvut.cz">F1tenth CTU Community</maintainer>
 
   <author email="boulet@ll.mit.edu">Michael T. Boulet</author>
+  <author email="vajnamar@fel.cvut.cz">Martin Vajnar</author>
+  <author email="klapajar@fel.cvut.cz">Jaroslav Klapálek</author>
 
   <license>BSD</license>
 
@@ -19,34 +23,20 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <!-- build_depend libraries -->
-  <build_depend>nodelet</build_depend>
-  <build_depend>pluginlib</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>tf</build_depend>
+  <!-- depend libraries -->
+  <depend>nodelet</depend>
+  <depend>pluginlib</depend>
+  <depend>roscpp</depend>
+  <depend>tf</depend>
 
-  <!-- build_depend message types -->
-  <build_depend>nav_msgs</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>ackermann_msgs</build_depend>
-  <build_depend>vesc_msgs</build_depend>
-
-  <!-- run_depend libraries -->
-  <run_depend>nodelet</run_depend>
-  <run_depend>pluginlib</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>tf</run_depend>
-
-  <!-- run_depend message types -->
-  <run_depend>nav_msgs</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>geometry_msgs</run_depend>
-  <run_depend>ackermann_msgs</run_depend>
-  <run_depend>vesc_msgs</run_depend>
+  <!-- depend message types -->
+  <depend>nav_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>ackermann_msgs</depend>
+  <depend>vesc_msgs</depend>
 
   <export>
-    <nodelet plugin="${prefix}/vesc_ackermann_nodelet.xml"/>
+    <index url="git@github.com:CTU-F1T/vesc.git" />
   </export>
-
 </package>
