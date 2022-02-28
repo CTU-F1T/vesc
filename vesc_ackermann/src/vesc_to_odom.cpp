@@ -23,16 +23,33 @@ VescToOdom::VescToOdom(ros::NodeHandle nh, ros::NodeHandle private_nh) :
   private_nh.param("base_frame", base_frame_, base_frame_);
   private_nh.param("use_servo_cmd_to_calc_angular_velocity", use_servo_cmd_, use_servo_cmd_);
   private_nh.param("use_external_servo_cmd_to_calc_angular_velocity", use_extern_servo_cmd_, use_extern_servo_cmd_);
-  if (!getRequiredParam(nh, "speed_to_erpm_gain", speed_to_erpm_gain_))
+  if (!private_nh.getParam("speed_to_erpm_gain", speed_to_erpm_gain_)) {
+    double m_poles, d_spur, m_pinion, d_ring, d_pinion, w_radius;
+    if (!getRequiredParam(nh, "/parameters/motor/poles", m_poles)
+        || !getRequiredParam(nh, "/parameters/motor/pinion", m_pinion)
+        || !getRequiredParam(nh, "/parameters/differential/spur", d_spur)
+        || !getRequiredParam(nh, "/parameters/differential/ring", d_ring)
+        || !getRequiredParam(nh, "/parameters/differential/pinion", d_pinion)
+        || !getRequiredParam(nh, "/parameters/wheels/radius", w_radius) )
+      return;
+
+    speed_to_erpm_gain_ = (m_poles / 2.0)
+                         * (1.0 * d_spur / m_pinion)
+                         * (1.0 * d_ring / d_pinion)
+                         / (2.0 * M_PI * w_radius)
+                         * 60;
+  } else {
+    ROS_INFO("Using passed 'speed_to_erpm_gain' value.");
+  }
+  if (!getRequiredParam(private_nh, "speed_to_erpm_offset", speed_to_erpm_offset_))
     return;
-  if (!getRequiredParam(nh, "speed_to_erpm_offset", speed_to_erpm_offset_))
-    return;
+  // TODO: Resolve servo for F1/10 car.
   if (use_servo_cmd_ || use_extern_servo_cmd_) {
-    if (!getRequiredParam(nh, "steering_angle_to_servo_gain", steering_to_servo_gain_))
+    if (!getRequiredParam(private_nh, "steering_angle_to_servo_gain", steering_to_servo_gain_))
       return;
-    if (!getRequiredParam(nh, "steering_angle_to_servo_offset", steering_to_servo_offset_))
+    if (!getRequiredParam(private_nh, "steering_angle_to_servo_offset", steering_to_servo_offset_))
       return;
-    if (!getRequiredParam(nh, "wheelbase", wheelbase_))
+    if (!getRequiredParam(private_nh, "wheelbase", wheelbase_))
       return;
   }
   if (use_extern_servo_cmd_) {

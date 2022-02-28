@@ -1,13 +1,16 @@
 <?xml version="1.0"?>
 <package>
   <name>vesc_ackermann</name>
-  <version>0.0.1</version>
+  <version>0.1.0</version>
   <description>
     Translate between VESC messages and ROS ackermann and odometry messages.
   </description>
 
+  <maintainer email="klapajar@fel.cvut.cz">Jaroslav Klapálek</maintainer>
   <maintainer email="boulet@ll.mit.edu">Michael T. Boulet</maintainer>
+
   <author email="boulet@ll.mit.edu">Michael T. Boulet</author>
+
   <license>BSD</license>
 
   <url type="website">http://www.ros.org/wiki/vesc_ackermann</url>
@@ -16,23 +19,29 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <!-- build_depend libraries -->
   <build_depend>nodelet</build_depend>
   <build_depend>pluginlib</build_depend>
   <build_depend>roscpp</build_depend>
+  <build_depend>tf</build_depend>
+
+  <!-- build_depend message types -->
   <build_depend>nav_msgs</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>geometry_msgs</build_depend>
-  <build_depend>tf</build_depend>
   <build_depend>ackermann_msgs</build_depend>
   <build_depend>vesc_msgs</build_depend>
 
+  <!-- run_depend libraries -->
   <run_depend>nodelet</run_depend>
   <run_depend>pluginlib</run_depend>
   <run_depend>roscpp</run_depend>
+  <run_depend>tf</run_depend>
+
+  <!-- run_depend message types -->
   <run_depend>nav_msgs</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>geometry_msgs</run_depend>
-  <run_depend>tf</run_depend>
   <run_depend>ackermann_msgs</run_depend>
   <run_depend>vesc_msgs</run_depend>
 

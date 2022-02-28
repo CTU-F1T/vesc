@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!--
+  Author: Jaroslav Klapálek <klapajar@fel.cvut.cz>
+  Description: Launch a node with 'vesc_to_odom' node.
+-->
+<launch>
+  <arg name="odom_frame" default="odom" doc="Coordinate frame of the car." />
+  <arg name="base_frame" default="base_link" doc="Coordinate frame of the environment." />
+
+  <arg name="use_servo_cmd_to_calc_angular_velocity" default="false" doc="(Servo) When true, servo information is required and used to calculate angular velocity." />
+
+  <arg name="steering_angle_to_servo_gain" default="" doc="(Required if Servo) Gain, when received value is divided by this, it will be within closed 0-1 interval." />
+  <arg name="steering_angle_to_servo_offset" default="" doc="(Required if Servo) Offset for servo value." />
+  <arg name="wheelbase" default="" doc="(Required if Servo) Distance between the wheels on the 'x' axis." />
+
+  <arg name="speed_to_erpm_gain" default="" doc="(Required if car parameters are missing) Gain, to convert VESC speed to metric values." />
+  <arg name="speed_to_erpm_offset" default="0" doc="Offset for VESC speed." />
+
+  <arg name="publish_tf" default="false" doc="When true, transformation between the frames is published." />
+
+  <node pkg="vesc_ackermann" type="vesc_to_odom_node" name="vesc_to_odom_node" output="screen">
+    <param name="odom_frame" value="$(arg odom_frame)" type="str" />
+    <param name="base_frame" value="$(arg base_frame)" type="str" />
+
+    <param name="use_servo_cmd_to_calc_angular_velocity" value="$(arg use_servo_cmd_to_calc_angular_velocity)" type="bool" />
+
+    <param name="steering_angle_to_servo_gain" value="$(arg steering_angle_to_servo_gain)" type="double" if="$(arg use_servo_cmd_to_calc_angular_velocity)" />
+    <param name="steering_angle_to_servo_offset" value="$(arg steering_angle_to_servo_offset)" type="double" if="$(arg use_servo_cmd_to_calc_angular_velocity)" />
+    <param name="wheelbase" value="$(arg wheelbase)" type="double" if="$(arg use_servo_cmd_to_calc_angular_velocity)" />
+
+    <param name="speed_to_erpm_gain" value="$(arg speed_to_erpm_gain)" type="double" if="$(eval arg('speed_to_erpm_gain') != '')" />
+    <param name="speed_to_erpm_offset" value="$(arg speed_to_erpm_offset)" type="double" if="$(eval arg('speed_to_erpm_offset') != '')" />
+
+    <param name="publish_tf" value="$(arg publish_tf)" type="bool" />
+  </node>
+</launch>
