@@ -15,22 +15,28 @@ inline bool getRequiredParam(const ros::NodeHandle& nh, std::string name, T& val
 
 VescToOdom::VescToOdom(ros::NodeHandle nh, ros::NodeHandle private_nh) :
   odom_frame_("odom"), base_frame_("base_link"),
-  use_servo_cmd_(true), publish_tf_(false), x_(0.0), y_(0.0), yaw_(0.0)
+  use_servo_cmd_(true), use_extern_servo_cmd_(false), publish_tf_(false),
+  x_(0.0), y_(0.0), yaw_(0.0)
 {
   // get ROS parameters
   private_nh.param("odom_frame", odom_frame_, odom_frame_);
   private_nh.param("base_frame", base_frame_, base_frame_);
   private_nh.param("use_servo_cmd_to_calc_angular_velocity", use_servo_cmd_, use_servo_cmd_);
+  private_nh.param("use_external_servo_cmd_to_calc_angular_velocity", use_extern_servo_cmd_, use_extern_servo_cmd_);
   if (!getRequiredParam(nh, "speed_to_erpm_gain", speed_to_erpm_gain_))
     return;
   if (!getRequiredParam(nh, "speed_to_erpm_offset", speed_to_erpm_offset_))
     return;
-  if (use_servo_cmd_) {
+  if (use_servo_cmd_ || use_extern_servo_cmd_) {
     if (!getRequiredParam(nh, "steering_angle_to_servo_gain", steering_to_servo_gain_))
       return;
     if (!getRequiredParam(nh, "steering_angle_to_servo_offset", steering_to_servo_offset_))
       return;
     if (!getRequiredParam(nh, "wheelbase", wheelbase_))
+      return;
+  }
+  if (use_extern_servo_cmd_) {
+    if (!getRequiredParam(nh, "external_servo_cmd_topic", extern_servo_cmd_topic_))
       return;
   }
   private_nh.param("publish_tf", publish_tf_, publish_tf_);
@@ -49,6 +55,10 @@ VescToOdom::VescToOdom(ros::NodeHandle nh, ros::NodeHandle private_nh) :
     servo_sub_ = nh.subscribe("sensors/servo_position_command", 10,
                               &VescToOdom::servoCmdCallback, this);
   }
+  if (use_extern_servo_cmd_) {
+    servo_sub_ = nh.subscribe(extern_servo_cmd_topic_, 10,
+                              &VescToOdom::servoCmdCallback, this);
+  }
 }
 
 void VescToOdom::vescStateCallback(const vesc_msgs::VescStateStamped::ConstPtr& state)
@@ -60,7 +70,7 @@ void VescToOdom::vescStateCallback(const vesc_msgs::VescStateStamped::ConstPtr& 
   // convert to engineering units
   double current_speed = ( state->state.speed - speed_to_erpm_offset_ ) / speed_to_erpm_gain_;
   double current_steering_angle(0.0), current_angular_velocity(0.0);
-  if (use_servo_cmd_) {
+  if (use_servo_cmd_ || use_extern_servo_cmd_) {
     current_steering_angle =
       ( last_servo_cmd_->data - steering_to_servo_offset_ ) / steering_to_servo_gain_;
     current_angular_velocity = current_speed * tan(current_steering_angle) / wheelbase_;
