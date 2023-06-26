@@ -56,13 +56,13 @@ VescDriver::VescDriver(ros::NodeHandle nh,
                                    &VescDriver::dutyCycleCallback, this);
     current_sub_ = nh.subscribe("commands/motor/current", 10, &VescDriver::currentCallback, this);
     brake_sub_ = nh.subscribe("commands/motor/brake", 10, &VescDriver::brakeCallback, this);
-    speed_sub_ = nh.subscribe("commands/motor/speed", 10, &VescDriver::speedCallback, this);
+    speed_sub_ = nh.subscribe("commands/motor/speed", 1, &VescDriver::speedCallback, this, ros::TransportHints().tcpNoDelay());
     position_sub_ = nh.subscribe("commands/motor/position", 10, &VescDriver::positionCallback, this);
     servo_sub_ = nh.subscribe("commands/servo/position", 10, &VescDriver::servoCallback, this);
   }
 
   // create a 50Hz timer, used for state machine & polling VESC telemetry
-  timer_ = nh.createTimer(ros::Duration(1.0/50.0), &VescDriver::timerCallback, this);
+  timer_ = nh.createTimer(ros::Duration(1.0/100.0), &VescDriver::timerCallback, this);
 }
 
   /* TODO or TO-THINKABOUT LIST
