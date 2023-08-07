@@ -98,7 +98,7 @@ void VescToOdom::vescStateCallback(const VescStateStamped::SharedPtr state)
 
   // convert to engineering units
   double current_speed = (-state->state.speed - speed_to_erpm_offset_) / speed_to_erpm_gain_;
-  if (std::fabs(current_speed) < 0.05) {
+  if (std::fabs(current_speed) < 0.08) { // TODO: Make this value changeable during start, as previously used 0.05 was not enough.
     current_speed = 0.0;
   }
   double current_steering_angle(0.0), current_angular_velocity(0.0);
